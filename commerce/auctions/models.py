@@ -14,10 +14,9 @@ class AuctionListing(models.Model):
 
     Categories = [("1", "Category 1"), ("2", "Category 2")]
 
-    categories = models.CharField(max_length=32, choices=Categories, blank=True)
+    category = models.CharField(max_length=32, choices=Categories, blank=True)
 
-    def __str__(self):
-        return f"Title:{self.title} | Description: {self.description} | Starting Bid: {self.starting_bit}"
+    
 
 
 class Bids(models.Model):
