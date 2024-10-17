@@ -1,7 +1,8 @@
 {% extends "auctions/layout.html" %} {% block body %}
 <h2>Active Listings</h2>
-{% for listing in auction_listings %} {{listing.title}} {{listing.description}}
-{{listing.starting_bid}}{%if listing.image%}
+{% for listing in auction_listings %}
+<a href="{% url 'listing' listing.id %}">{{listing.title}}</a>
+{{listing.description}} {{listing.starting_bid}}{%if listing.image%}
 <img src="{{ listing.image }}" />{%endif%}
 <br />
 {%endfor%} TODO {% endblock %}

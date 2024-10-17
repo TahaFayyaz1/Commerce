@@ -1,0 +1,12 @@
+{% extends 'auctions/layout.html' %} {%block title%} {{listing.title}}
+{%endblock%} {% block body%}
+<img src="{{listing.image}}" alt="Image Not Available" />
+<h1>{{listing.title}}</h1>
+<h4>{{listing.description}}</h4>
+<div>Current Price: {{current_price}}</div>
+<div>By: {{listing.user}}</div>
+<form method="post">
+  {%csrf_token%} {{ watchlist_form }}<input type="submit" />
+</form>
+
+{%endblock %}

@@ -31,3 +31,12 @@ class Comments(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
     comment = models.TextField(blank=True)
+
+
+class WatchList(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    auction= models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
+    watchlist = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ["auction", "user"]

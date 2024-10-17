@@ -3,8 +3,8 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .forms import AuctionListingForm
-from .models import User, AuctionListing
+from .forms import AuctionListingForm, WatchListForm
+from .models import User, AuctionListing, Bids, WatchList
 
 
 def index(request):
@@ -67,10 +67,40 @@ def register(request):
 
 def new_listing(request):
     if request.method=="POST":
-        print("working")
         form = AuctionListingForm(request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse("index"))
         
     return render(request, "auctions/newlistings.html", {"auction_form": AuctionListingForm()})
+
+
+
+def listing(request, listing_id):
+    listing=AuctionListing.objects.get(id=listing_id)
+    try: 
+        watchlist_check = WatchList.objects.get(auction=listing, user = request.user)
+        watchlist_check = watchlist_check.watchlist
+    except WatchList.DoesNotExist:
+        watchlist_check=False
+    try:
+        listing_bid=Bids.objects.get(auction=listing)
+        current_price = listing_bid.current_bid
+
+    except Bids.DoesNotExist:
+        current_price=listing.starting_bid
+    
+    if request.method == "POST":
+        form = WatchListForm(request.POST)
+        if form.is_valid():
+            watchlist = form.cleaned_data["watchlist"]
+            try:
+                form = WatchList.objects.get(user = request.user, auction = listing)
+                form.watchlist=watchlist
+            except WatchList.DoesNotExist:
+                print("working")
+                form = WatchList(user=request.user, auction=listing, watchlist=watchlist)
+            form.save()
+            return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+    
+    return render(request, "auctions/listing.html", {"listing":listing, "current_price":current_price, "watchlist_form": WatchListForm(initial={'watchlist': watchlist_check})})
