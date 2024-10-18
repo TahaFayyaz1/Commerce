@@ -3,8 +3,9 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .forms import AuctionListingForm, WatchListForm
+from .forms import AuctionListingForm, BidsForm
 from .models import User, AuctionListing, Bids, WatchList
+import sys
 
 
 def index(request):
@@ -77,30 +78,54 @@ def new_listing(request):
 
 
 def listing(request, listing_id):
-    listing=AuctionListing.objects.get(id=listing_id)
-    try: 
-        watchlist_check = WatchList.objects.get(auction=listing, user = request.user)
-        watchlist_check = watchlist_check.watchlist
-    except WatchList.DoesNotExist:
-        watchlist_check=False
+    listing=AuctionListing.objects.get(pk=listing_id)
+    
     try:
-        listing_bid=Bids.objects.get(auction=listing)
+        watchlist_status = WatchList.objects.get(auction=listing_id, user = request.user).watchlist
+    except WatchList.DoesNotExist:
+        watchlist_status = False
+    
+    try:
+        listing_bid=Bids.objects.filter(auction=listing).order_by('-current_bid').first()
         current_price = listing_bid.current_bid
 
     except Bids.DoesNotExist:
         current_price=listing.starting_bid
-    
+
+    return render(request, "auctions/listing.html", {"listing":listing, "current_price":current_price, "watchlist_status": watchlist_status, "bidding_form": BidsForm(min_value=current_price)})
+
+
+def bid(request):
     if request.method == "POST":
-        form = WatchListForm(request.POST)
-        if form.is_valid():
-            watchlist = form.cleaned_data["watchlist"]
-            try:
-                form = WatchList.objects.get(user = request.user, auction = listing)
-                form.watchlist=watchlist
-            except WatchList.DoesNotExist:
-                print("working")
-                form = WatchList(user=request.user, auction=listing, watchlist=watchlist)
+        bids_form = BidsForm (request.POST)
+        if bids_form.is_valid():
+            current_bid = bids_form.cleaned_data["current_bid"]
+            listing_id = request.POST.get("listing_id")
+            form = Bids(user=request.user, auction=AuctionListing.objects.get(pk=listing_id), current_bid=current_bid)
             form.save()
             return HttpResponseRedirect(reverse("listing", args=[listing_id]))
-    
-    return render(request, "auctions/listing.html", {"listing":listing, "current_price":current_price, "watchlist_form": WatchListForm(initial={'watchlist': watchlist_check})})
+        
+        else:
+            return HttpResponse("hello")
+        
+
+def watchlistfunc(request):
+    if request.method == "POST":
+        listing_id = request.POST.get("listing_id")
+        listing = request.POST.get("listing")
+        try:
+            print("hereee")
+            watchlistdata = WatchList.objects.get(user = request.user, auction = listing_id)
+            if watchlistdata.watchlist:
+                watchlistdata.watchlist=False
+            else:
+                watchlistdata.watchlist=True
+        except WatchList.DoesNotExist:
+            watchlistdata = WatchList(user=request.user, auction= eval(listing), watchlist=False)
+        watchlistdata.save()
+
+        return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+        
+
+def close_bid(request):
+    pass

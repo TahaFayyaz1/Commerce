@@ -22,7 +22,7 @@ class AuctionListing(models.Model):
 class Bids(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
-    current_bid = models.DecimalField(max_digits=12, decimal_places=2)
+    current_bid = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.user} => {self.current_bid} => {self.auction}"

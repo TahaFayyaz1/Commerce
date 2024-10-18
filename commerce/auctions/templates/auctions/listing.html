@@ -5,8 +5,23 @@
 <h4>{{listing.description}}</h4>
 <div>Current Price: {{current_price}}</div>
 <div>By: {{listing.user}}</div>
-<form method="post">
-  {%csrf_token%} {{ watchlist_form }}<input type="submit" />
+<form action="{% url 'watchlistfunc' %}" method="post">
+  {%csrf_token%}
+  <input type="hidden" name="listing_id" value="{{ listing.id }}" />
+  <input type="hidden" name="listing" value="{{ listing }}" />
+  {% if not watchlist_status %}
+  <input type="submit" value="Add to Watchlist" />
+  {% else%}
+  <input type="submit" value="Remove from Watchlist" />
+  {%endif%}
 </form>
-
-{%endblock %}
+<form action="{% url 'bid' %}" method="post">
+  {%csrf_token%} {{ bidding_form }}<input type="submit" />
+  <input type="hidden" name="listing_id" value="{{ listing.id }}" />
+  <input type="hidden" name="user" value="{{ listing.user }}" />
+</form>
+{% if request.user == listing.user%}
+<form action="{% url 'close_bid' %}" method="post">
+  {% csrf_token %} <input type="submit" value="Close Bid" />
+</form>
+{% endif %} {%endblock %}
