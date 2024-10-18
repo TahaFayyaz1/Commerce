@@ -8,20 +8,25 @@
 <form action="{% url 'watchlistfunc' %}" method="post">
   {%csrf_token%}
   <input type="hidden" name="listing_id" value="{{ listing.id }}" />
-  <input type="hidden" name="listing" value="{{ listing }}" />
   {% if not watchlist_status %}
   <input type="submit" value="Add to Watchlist" />
   {% else%}
   <input type="submit" value="Remove from Watchlist" />
   {%endif%}
 </form>
+{% if listing.active %}
 <form action="{% url 'bid' %}" method="post">
   {%csrf_token%} {{ bidding_form }}<input type="submit" />
   <input type="hidden" name="listing_id" value="{{ listing.id }}" />
   <input type="hidden" name="user" value="{{ listing.user }}" />
 </form>
-{% if request.user == listing.user%}
+{% else %}
+<h4>Auction has been closed</h4>
+{%endif%} {% if request.user == listing.user%}
 <form action="{% url 'close_bid' %}" method="post">
   {% csrf_token %} <input type="submit" value="Close Bid" />
+  <input type="hidden" name="listing_id" value="{{ listing.id }}" />
 </form>
+{% endif %} {% if request.user == winner_bid.user and not listing.active%}
+<h1>Congratulation!!! You have won this auction.</h1>
 {% endif %} {%endblock %}

@@ -16,6 +16,8 @@ class AuctionListing(models.Model):
 
     category = models.CharField(max_length=32, choices=Categories, blank=True)
 
+    active = models.BooleanField(default=True)
+
     
 
 
@@ -36,7 +38,7 @@ class Comments(models.Model):
 class WatchList(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     auction= models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
-    watchlist = models.BooleanField(default=False)
+    watchlist = models.BooleanField()
 
     class Meta:
         unique_together = ["auction", "user"]

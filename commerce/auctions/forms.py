@@ -6,7 +6,7 @@ from django.core.validators import MinValueValidator
 class AuctionListingForm(forms.ModelForm):
     class Meta:
         model = AuctionListing
-        fields = "__all__"
+        exclude = ['user', 'active']
 
 
 class BidsForm(forms.ModelForm):
