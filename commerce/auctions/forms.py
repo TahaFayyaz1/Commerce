@@ -1,5 +1,5 @@
 from django import forms
-from .models import User, AuctionListing, Bids, Comments, WatchList
+from .models import AuctionListing, Bids, Comments
 from django.core.validators import MinValueValidator
 
 
@@ -23,3 +23,8 @@ class BidsForm(forms.ModelForm):
             current_bid.validators.append(MinValueValidator(min_value))
             current_bid.widget.attrs['min'] = min_value
 
+
+class CommentsForm(forms.ModelForm):
+    class Meta:
+        model = Comments
+        fields = ['comment']

@@ -20,7 +20,6 @@ class AuctionListing(models.Model):
 
     
 
-
 class Bids(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)

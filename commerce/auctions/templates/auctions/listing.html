@@ -29,4 +29,10 @@
 </form>
 {% endif %} {% if request.user == winner_bid.user and not listing.active%}
 <h1>Congratulation!!! You have won this auction.</h1>
-{% endif %} {%endblock %}
+
+{% endif %}
+<form action="{%url 'comment' %}" method="post">
+  {%csrf_token%} {{comments_form}}<input type="submit" />
+  <input type="hidden" name="listing_id" value="{{ listing.id }}" />
+</form>
+{%for comment in comments%} {{ comment.comment }} {% endfor %} {%endblock %}

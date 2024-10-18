@@ -2,9 +2,9 @@ from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
-from .forms import AuctionListingForm, BidsForm
-from .models import User, AuctionListing, Bids, WatchList
+from django.urls import reverse
+from .forms import AuctionListingForm, BidsForm, CommentsForm
+from .models import User, AuctionListing, Bids, WatchList, Comments
 from django.contrib.auth.decorators import login_required
 
 
@@ -88,15 +88,14 @@ def new_listing(request):
 def listing(request, listing_id):
     listing=AuctionListing.objects.get(pk=listing_id)
     winner_bid=Bids.objects.filter(auction=listing).order_by('-current_bid').first()
+    comments=Comments.objects.filter(auction=listing)
 
-    print (request.user)
-    
     try:
         watchlist_status = WatchList.objects.get(auction=listing_id, user = request.user).watchlist
     except (WatchList.DoesNotExist, TypeError):
         watchlist_status = False
-    print ("working")
     
+
     listing_bid=Bids.objects.filter(auction=listing).order_by('-current_bid').first()
     if listing_bid is None:
         current_price=listing.starting_bid
@@ -104,7 +103,7 @@ def listing(request, listing_id):
         current_price = listing_bid.current_bid
 
 
-    return render(request, "auctions/listing.html", {"listing":listing, "current_price":current_price, "watchlist_status": watchlist_status, "bidding_form": BidsForm(min_value=current_price+1), "winner_bid": winner_bid})
+    return render(request, "auctions/listing.html", {"listing":listing, "current_price":current_price, "watchlist_status": watchlist_status, "bidding_form": BidsForm(min_value=current_price+1), "winner_bid": winner_bid, "comments_form":CommentsForm(), "comments":comments})
 
 @login_required()
 def bid(request):
@@ -147,3 +146,16 @@ def close_bid(request):
     
         return HttpResponseRedirect(reverse("listing", args=[listing_id]))
     
+
+@login_required()
+def comment(request):
+    if request.method == "POST":
+        comment_form = CommentsForm (request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.cleaned_data["comment"]
+            listing_id = request.POST.get("listing_id")
+            listing=AuctionListing.objects.get(pk=listing_id)
+            comment_form = Comments(user=request.user, auction=listing, comment=comment)
+            comment_form.save()
+
+        return HttpResponseRedirect(reverse("listing", args=[listing_id]))
