@@ -1,6 +1,9 @@
 {% extends 'auctions/layout.html' %} {%block title%} {{listing.title}}
 {%endblock%} {% block body%}
+
+<a href="{% url 'watchlist'%}">Watch List</a>
 <img src="{{listing.image}}" alt="Image Not Available" />
+
 <h1>{{listing.title}}</h1>
 <h4>{{listing.description}}</h4>
 <div>Current Price: {{current_price}}</div>

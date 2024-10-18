@@ -159,3 +159,9 @@ def comment(request):
             comment_form.save()
 
         return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+
+@login_required()
+def watchlist(request):
+    watchlistdata = WatchList.objects.filter(user=request.user, watchlist=True)
+
+    return render(request, 'auctions/watchlist.html', {"watchlistdata": watchlistdata})
