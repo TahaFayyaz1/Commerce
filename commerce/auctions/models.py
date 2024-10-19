@@ -12,9 +12,27 @@ class AuctionListing(models.Model):
     starting_bid = models.DecimalField(max_digits=12, decimal_places=2)
     image = models.URLField(blank=True)
 
-    Categories = [("1", "Category 1"), ("2", "Category 2")]
+    Categories = [("Electronics", "Electronics"), 
+              ("Fashion and Apparel", "Fashion and Apparel"), 
+              ("Health and Beauty", "Health and Beauty"), 
+              ("Home and Garden", "Home and Garden"), 
+              ("Books and Media", "Books and Media"), 
+              ("Sports and Outdoors", "Sports and Outdoors"), 
+              ("Toys and Hobbies", "Toys and Hobbies"), 
+              ("Automotive", "Automotive"), 
+              ("Groceries", "Groceries"),
+              ("Jewelry", "Jewelry"),
+              ("Office Supplies", "Office Supplies"),
+              ("Pet Supplies", "Pet Supplies"),
+              ("Baby Products", "Baby Products"),
+              ("Art and Craft", "Art and Craft"),
+              ("Musical Instruments", "Musical Instruments"),
+              ("Collectibles", "Collectibles"),
+              ("Travel and Luggage", "Travel and Luggage"),
+              ("Furniture", "Furniture"),
+              ("Party Supplies", "Party Supplies")]
 
-    category = models.CharField(max_length=32, choices=Categories, blank=True)
+    category = models.CharField(max_length=64, choices=Categories, blank=True)
 
     active = models.BooleanField(default=True)
 
