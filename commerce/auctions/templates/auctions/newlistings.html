@@ -2,7 +2,10 @@
 {% block body%}
 <form method="post">
   {%csrf_token%} {{ auction_form.as_p }}
-  <input type="submit" />
+
+  <div class="d-grid gap-2 col-6 mx-auto">
+    <input class="btn btn-outline-dark" type="submit" />
+  </div>
 </form>
 
 {% endblock %}

@@ -1,41 +1,101 @@
 {% extends 'auctions/layout.html' %} {%block title%} {{listing.title}}
 {%endblock%} {% block body%}
-
-<a href="{% url 'watchlist'%}">Watch List</a>
-<img src="{{listing.image}}" alt="Image Not Available" />
-
-<h1>{{listing.title}}</h1>
-<h4>{{listing.description}}</h4>
-<div>Current Price: {{current_price}}</div>
-<div>By: {{listing.user}}</div>
+<p class="display-5">Listing: {{listing.title}}</p>
+{% if request.user == winner_bid.user and not listing.active%}
+<h1 class="display-4 mark text-center">
+  Congratulation!!! You have won this auction!
+</h1>
+{%endif%} {% if not listing.active %}
+<h1 class="mark text-center mb-8">Auction Closed!</h1>
+{% endif %}
 <form action="{% url 'watchlistfunc' %}" method="post">
   {%csrf_token%}
   <input type="hidden" name="listing_id" value="{{ listing.id }}" />
   {% if not watchlist_status %}
-  <input type="submit" value="Add to Watchlist" />
+  <input
+    type="submit"
+    value="Add to Watchlist"
+    class="btn btn-outline-dark btn-sm mb-2"
+  />
   {% else%}
-  <input type="submit" value="Remove from Watchlist" />
+  <input
+    type="submit"
+    value="Remove from Watchlist"
+    class="btn btn-outline-dark btn-sm mb-2"
+  />
   {%endif%}
 </form>
+{% if request.user == listing.user%}
+<form action="{% url 'close_bid' %}" method="post">
+  {% csrf_token %}
+  <input
+    type="submit"
+    value="Close Bid"
+    class="btn btn-outline-dark btn-sm mb-2"
+  />
+  <input type="hidden" name="listing_id" value="{{ listing.id }}" />
+</form>
+{% endif %}
+<img
+  src="{{listing.image}}"
+  alt="Image Not Available"
+  class="img-fluid"
+  style="max-height: 300px"
+/>
+<p class="lead mb-2">Description: {{listing.description}}</p>
+<h5 class="h5 mb-2">${{current_price}}</h5>
+
 {% if listing.active %}
 <form action="{% url 'bid' %}" method="post">
-  {%csrf_token%} {{ bidding_form }}<input type="submit" />
+  <div class="input-group mb-2">
+    <span class="input-group-text">$</span>
+    {%csrf_token%} {{ bidding_form }}<input
+      type="submit"
+      class="btn btn-outline-dark"
+      id="button-addon2"
+      value="Place Bid"
+    />
+  </div>
   <input type="hidden" name="listing_id" value="{{ listing.id }}" />
   <input type="hidden" name="user" value="{{ listing.user }}" />
 </form>
-{% else %}
-<h4>Auction has been closed</h4>
-{%endif%} {% if request.user == listing.user%}
-<form action="{% url 'close_bid' %}" method="post">
-  {% csrf_token %} <input type="submit" value="Close Bid" />
-  <input type="hidden" name="listing_id" value="{{ listing.id }}" />
-</form>
-{% endif %} {% if request.user == winner_bid.user and not listing.active%}
-<h1>Congratulation!!! You have won this auction.</h1>
-
-{% endif %}
+{%endif%}
+<br />
+<br />
+<h4>Detail:</h4>
+<ul>
+  <li>Listed By: {{listing.user}}</li>
+  <li>Cateogry: {{listing.category}}</li>
+</ul>
+<br />
+<br />
 <form action="{%url 'comment' %}" method="post">
-  {%csrf_token%} {{comments_form}}<input type="submit" />
+  <div class="input-group mb-3">
+    {%csrf_token%} {{comments_form}}<input
+      type="submit"
+      class="btn btn-outline-dark"
+    />
+  </div>
   <input type="hidden" name="listing_id" value="{{ listing.id }}" />
 </form>
-{%for comment in comments%} {{ comment.comment }} {% endfor %} {%endblock %}
+
+{% if comments.0 is not None%}
+<table class="table">
+  <thead>
+    <tr>
+      <th>User</th>
+      <th>Comment</th>
+    </tr>
+  </thead>
+  <tbody>
+    {%for comment in comments%}
+    <tr>
+      <td class="col-md-1 align-middle">{{comment.user}}</td>
+      <td class="col-md-11 align-middle">{{comment.comment}}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>Be the first one to comment...</p>
+{%endif %} {%endblock %}

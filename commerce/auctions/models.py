@@ -12,7 +12,8 @@ class AuctionListing(models.Model):
     starting_bid = models.DecimalField(max_digits=12, decimal_places=2)
     image = models.URLField(blank=True)
 
-    Categories = [("Electronics", "Electronics"), 
+    Categories = [("No Category", "No Category"),
+                ("Electronics", "Electronics"), 
               ("Fashion and Apparel", "Fashion and Apparel"), 
               ("Health and Beauty", "Health and Beauty"), 
               ("Home and Garden", "Home and Garden"), 
@@ -32,7 +33,7 @@ class AuctionListing(models.Model):
               ("Furniture", "Furniture"),
               ("Party Supplies", "Party Supplies")]
 
-    category = models.CharField(max_length=64, choices=Categories, blank=True)
+    category = models.CharField(max_length=64, choices=Categories, default="No Category")
 
     active = models.BooleanField(default=True)
 
@@ -43,8 +44,6 @@ class Bids(models.Model):
     auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
     current_bid = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
-    def __str__(self):
-        return f"{self.user} => {self.current_bid} => {self.auction}"
 
 class Comments(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

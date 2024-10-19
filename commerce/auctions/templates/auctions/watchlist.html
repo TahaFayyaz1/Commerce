@@ -1,12 +1,56 @@
 {% extends 'auctions/layout.html' %} {% block title %} Watchlist {% endblock %}
-{%block body%} {% for watchlist in watchlistdata%}
+{%block body%}
 
-<ul>
-  <li>
-    <a href="{% url 'listing' watchlist.auction.id %}"
-      >{{watchlist.auction.title}}</a
-    >
-  </li>
-</ul>
+<h2>Watchlist</h2>
 
-{%endfor %} {%endblock%}
+<table class="table">
+  <thead>
+    <tr>
+      <th>Image</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Current Price</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+    {% for watchlist in watchlistdata%}
+    <tr>
+      <td class="col-md-2 align-middle">
+        {%if watchlist.auction.image%}<a
+          href="{% url 'listing' watchlist.auction.id %}"
+        >
+          <img
+            src="{{ watchlist.auction.image }}"
+            class="img-thumbnail bg-dark"
+            alt="Does not exist"
+        /></a>
+        {%else%}
+        <p style="font-size: smaller">Picture not available for this listing</p>
+        {%endif%}
+      </td>
+      <td class="col-md-1 align-middle">
+        <a
+          class="link-dark link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover"
+          href="{% url 'listing' watchlist.auction.id %}"
+          >{{watchlist.auction.title}}</a
+        >
+      </td>
+      <td class="align-middle">
+        <a
+          class="link-dark link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover"
+          href="{% url 'listing' watchlist.auction.id %}"
+          >{{watchlist.auction.description}}</a
+        >
+      </td>
+      <td class="col-md-2 align-middle">
+        <a
+          class="link-dark link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover"
+          href="{% url 'listing' watchlist.auction.id %}"
+          >{{watchlist.auction.starting_bid}}</a
+        >
+      </td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+{%endblock%}

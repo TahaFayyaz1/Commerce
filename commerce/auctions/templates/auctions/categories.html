@@ -1,8 +1,13 @@
 {% extends 'auctions/layout.html' %} {% block title %} Categories {% endblock %}
 {%block body%} {% for value in categories %}
-<ul>
-  <li>
-    <a href="{% url 'category' value.1 %}">{{value.1}}</a>
+<ul class="list-group list-group-flush">
+  <li class="list-group-item">
+    <a
+      href="{% url 'category' value.1 %}"
+      class="link-dark link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover"
+      >{{value.1}}</a
+    >
   </li>
 </ul>
+
 {%endfor%} {%endblock%}

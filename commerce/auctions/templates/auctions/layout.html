@@ -2,39 +2,75 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <title>{% block title %}Auctions{% endblock %}</title>
-        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        <link href="{% static 'auctions/styles.css' %}" rel="stylesheet">
-    </head>
-    <body>
-        <h1>Auctions</h1>
-        <div>
-            {% if user.is_authenticated %}
-                Signed in as <strong>{{ user.username }}</strong>.
-            {% else %}
-                Not signed in.
-            {% endif %}
-        </div>
-        <ul class="nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{% url 'index' %}">Active Listings</a>
-            </li>
-            {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                </li>
-            {% else %}
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'login' %}">Log In</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{% url 'register' %}">Register</a>
-                </li>
-            {% endif %}
-        </ul>
-        <hr>
-        {% block body %}
-        {% endblock %}
-    </body>
+  <head>
+    <title>{% block title %}Auctions{% endblock %}</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+    <link href="{% static 'auctions/styles.css' %}" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <nav class="navbar border-bottom mb-2">
+      <h2 class="h2">Auctions</h2>
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="btn btn-outline-dark me-2" href="{% url 'index' %}"
+            >Active Listings</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-dark me-2" href="{% url 'add_new_listing'%}"
+            >Create Listing</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-dark me-2" href="{% url 'watchlist'%}"
+            >Watch List</a
+          >
+        </li>
+
+        <li class="nav-item">
+          <a class="btn btn-outline-dark me-2" href="{% url 'categories'%}"
+            >Categories</a
+          >
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="btn btn-outline-dark me-2" href="{% url 'logout' %}"
+            >Log Out</a
+          >
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="btn btn-outline-dark me-2" href="{% url 'login' %}"
+            >Log In</a
+          >
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-dark me-2" href="{% url 'register' %}"
+            >Register</a
+          >
+        </li>
+        {% endif %}
+      </ul>
+      <div class="navbar-text">
+        {% if user.is_authenticated %} Signed in as
+        <strong>{{ user.username }}</strong>. {% else %} Not signed in.
+        {%endif%}
+      </div>
+      <hr />
+    </nav>
+    {% block body %} {% endblock %}
+  </body>
 </html>

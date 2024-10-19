@@ -1,8 +1,52 @@
-{% extends "auctions/layout.html" %} {% block body %}
+{% extends "auctions/layout.html" %}{% block body %}
 <h2>Active Listings</h2>
-{% for listing in auction_listings %}
-<a href="{% url 'listing' listing.id %}">{{listing.title}}</a>
-{{listing.description}} {{listing.starting_bid}}{%if listing.image%}
-<img src="{{ listing.image }}" />{%endif%}
-<br />
-{%endfor%} TODO {% endblock %}
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Image</th>
+      <th>Title</th>
+      <th>Description</th>
+      <th>Current Price</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+    {% for listing, current_price in current_prices.items %}
+    <tr>
+      <td class="col-md-2 align-middle">
+        {%if listing.image%}<a href="{% url 'listing' listing.id %}">
+          <img
+            src="{{ listing.image }}"
+            class="img-thumbnail bg-dark"
+            alt="Does not exist"
+        /></a>
+        {%else%}
+        <p style="font-size: smaller">Picture not available for this listing</p>
+        {%endif%}
+      </td>
+      <td class="col-md-1 align-middle">
+        <a
+          class="link-dark link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover"
+          href="{% url 'listing' listing.id %}"
+          >{{listing.title}}</a
+        >
+      </td>
+      <td class="align-middle">
+        <a
+          class="link-dark link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover"
+          href="{% url 'listing' listing.id %}"
+          >{{listing.description}}</a
+        >
+      </td>
+      <td class="col-md-2 align-middle">
+        <a
+          class="link-dark link-offset-2 link-underline-opacity-0 link-underline-opacity-100-hover"
+          href="{% url 'listing' listing.id %}"
+          >{{current_price}}</a
+        >
+      </td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+{% endblock %}

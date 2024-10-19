@@ -9,8 +9,17 @@ from django.contrib.auth.decorators import login_required
 
 
 def index(request):
-    auction_listings=AuctionListing.objects.all()
-    return render(request, "auctions/index.html", {"auction_listings":auction_listings})
+    auction_listings=AuctionListing.objects.filter(active=True)
+    current_prices={}
+    for listing in auction_listings:
+        listing_bid=Bids.objects.filter(auction=listing).order_by('-current_bid').first()
+        if listing_bid is None:
+            current_price=listing.starting_bid
+        else:
+            current_price = listing_bid.current_bid
+        current_prices[listing] = current_price
+
+    return render(request, "auctions/index.html", {"auction_listings":auction_listings, "current_prices":current_prices})
 
 
 def login_view(request):
@@ -87,7 +96,6 @@ def new_listing(request):
 
 def listing(request, listing_id):
     listing=AuctionListing.objects.get(pk=listing_id)
-    winner_bid=Bids.objects.filter(auction=listing).order_by('-current_bid').first()
     comments=Comments.objects.filter(auction=listing)
 
     try:
@@ -99,11 +107,13 @@ def listing(request, listing_id):
     listing_bid=Bids.objects.filter(auction=listing).order_by('-current_bid').first()
     if listing_bid is None:
         current_price=listing.starting_bid
+        current_price_check=listing.starting_bid
     else:
         current_price = listing_bid.current_bid
+        current_price_check = float(listing_bid.current_bid) + 0.01
 
 
-    return render(request, "auctions/listing.html", {"listing":listing, "current_price":current_price, "watchlist_status": watchlist_status, "bidding_form": BidsForm(min_value=current_price+1), "winner_bid": winner_bid, "comments_form":CommentsForm(), "comments":comments})
+    return render(request, "auctions/listing.html", {"listing":listing, "current_price":current_price, "watchlist_status": watchlist_status, "bidding_form": BidsForm(min_value=current_price_check), "winner_bid": listing_bid, "comments_form":CommentsForm(), "comments":comments})
 
 @login_required()
 def bid(request):
