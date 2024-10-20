@@ -25,17 +25,6 @@
   />
   {%endif%}
 </form>
-{% if request.user == listing.user%}
-<form action="{% url 'close_bid' %}" method="post">
-  {% csrf_token %}
-  <input
-    type="submit"
-    value="Close Bid"
-    class="btn btn-outline-dark btn-sm mb-2"
-  />
-  <input type="hidden" name="listing_id" value="{{ listing.id }}" />
-</form>
-{% endif %}
 <img
   src="{{listing.image}}"
   alt="Image Not Available"
@@ -45,7 +34,7 @@
 <p class="lead mb-2">Description: {{listing.description}}</p>
 <h5 class="h5 mb-2">${{current_price}}</h5>
 
-{% if listing.active %}
+{% if listing.active and request.user != listing.user %}
 <form action="{% url 'bid' %}" method="post">
   <div class="input-group mb-2">
     <span class="input-group-text">$</span>
@@ -57,15 +46,26 @@
     />
   </div>
   <input type="hidden" name="listing_id" value="{{ listing.id }}" />
-  <input type="hidden" name="user" value="{{ listing.user }}" />
+  <input type="hidden" name="counter" value="{{ winner_bid.counter }}" />
 </form>
-{%endif%}
+{%endif%} {% if request.user == listing.user%}
+<form action="{% url 'close_bid' %}" method="post">
+  {% csrf_token %}
+  <input
+    type="submit"
+    value="Close Bid"
+    class="btn btn-outline-dark btn-sm mb-2"
+  />
+  <input type="hidden" name="listing_id" value="{{ listing.id }}" />
+</form>
+{% endif %}
 <br />
 <br />
 <h4>Detail:</h4>
 <ul>
   <li>Listed By: {{listing.user}}</li>
   <li>Cateogry: {{listing.category}}</li>
+  <li>Posted On: {{listing.auction_datetime}}</li>
 </ul>
 <br />
 <br />
@@ -85,13 +85,15 @@
     <tr>
       <th>User</th>
       <th>Comment</th>
+      <th>Posted on</th>
     </tr>
   </thead>
   <tbody>
     {%for comment in comments%}
     <tr>
       <td class="col-md-1 align-middle">{{comment.user}}</td>
-      <td class="col-md-11 align-middle">{{comment.comment}}</td>
+      <td class="col-md-9 align-middle">{{comment.comment}}</td>
+      <td class="col-md-2 align-middle">{{comment.comment_datetime}}</td>
     </tr>
     {% endfor %}
   </tbody>

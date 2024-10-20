@@ -6,6 +6,7 @@ from django.urls import reverse
 from .forms import AuctionListingForm, BidsForm, CommentsForm
 from .models import User, AuctionListing, Bids, WatchList, Comments
 from django.contrib.auth.decorators import login_required
+import datetime 
 
 
 def index(request):
@@ -85,8 +86,7 @@ def new_listing(request):
             image = form.cleaned_data["image"]
             category = form.cleaned_data["category"]
 
-            form = AuctionListing(user=request.user, title=title, description=description, starting_bid=starting_bid, image=image, category=category)
-
+            form = AuctionListing(user=request.user, title=title, description=description, starting_bid=starting_bid, image=image, category=category, auction_datetime = datetime.datetime.now())
             form.save()
             return HttpResponseRedirect(reverse("index"))
         
@@ -95,15 +95,18 @@ def new_listing(request):
 
 
 def listing(request, listing_id):
-    listing=AuctionListing.objects.get(pk=listing_id)
+    try:
+        listing=AuctionListing.objects.get(pk=listing_id)
+    except AuctionListing.DoesNotExist:
+        return render(request, "auctions/errorlisting.html")
     comments=Comments.objects.filter(auction=listing)
+    
 
     try:
         watchlist_status = WatchList.objects.get(auction=listing_id, user = request.user).watchlist
     except (WatchList.DoesNotExist, TypeError):
         watchlist_status = False
     
-
     listing_bid=Bids.objects.filter(auction=listing).order_by('-current_bid').first()
     if listing_bid is None:
         current_price=listing.starting_bid
@@ -112,8 +115,8 @@ def listing(request, listing_id):
         current_price = listing_bid.current_bid
         current_price_check = float(listing_bid.current_bid) + 0.01
 
-
     return render(request, "auctions/listing.html", {"listing":listing, "current_price":current_price, "watchlist_status": watchlist_status, "bidding_form": BidsForm(min_value=current_price_check), "winner_bid": listing_bid, "comments_form":CommentsForm(), "comments":comments})
+
 
 @login_required()
 def bid(request):
@@ -124,16 +127,16 @@ def bid(request):
             listing_id = request.POST.get("listing_id")
             form = Bids(user=request.user, auction=AuctionListing.objects.get(pk=listing_id), current_bid=current_bid)
             form.save()
-            return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+        return HttpResponseRedirect(reverse("listing", args=[listing_id]))
         
-        else:
-            return HttpResponse("hello")
+
         
 @login_required()
 def watchlistfunc(request):
     if request.method == "POST":
         listing_id = request.POST.get("listing_id")
         listing=AuctionListing.objects.get(pk=listing_id)
+
         try:
             watchlistdata = WatchList.objects.get(user = request.user, auction = listing_id)
             if watchlistdata.watchlist:
@@ -146,6 +149,7 @@ def watchlistfunc(request):
 
         return HttpResponseRedirect(reverse("listing", args=[listing_id]))
         
+
 @login_required()
 def close_bid(request):
     if request.method == "POST":
@@ -165,17 +169,17 @@ def comment(request):
             comment = comment_form.cleaned_data["comment"]
             listing_id = request.POST.get("listing_id")
             listing=AuctionListing.objects.get(pk=listing_id)
-            comment_form = Comments(user=request.user, auction=listing, comment=comment)
+            comment_form = Comments(user=request.user, auction=listing, comment=comment, comment_datetime = datetime.datetime.now())
             comment_form.save()
 
         return HttpResponseRedirect(reverse("listing", args=[listing_id]))
+
 
 @login_required()
 def watchlist(request):
     watchlistdata = WatchList.objects.filter(user=request.user, watchlist=True)
 
     return render(request, 'auctions/watchlist.html', {"watchlistdata": watchlistdata})
-
 
 
 def categories(request):

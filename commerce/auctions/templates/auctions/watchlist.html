@@ -2,7 +2,7 @@
 {%block body%}
 
 <h2>Watchlist</h2>
-
+{% if watchlistdata.0 is not None%}
 <table class="table">
   <thead>
     <tr>
@@ -21,7 +21,7 @@
         >
           <img
             src="{{ watchlist.auction.image }}"
-            class="img-thumbnail bg-dark"
+            class="img-thumbnail"
             alt="Does not exist"
         /></a>
         {%else%}
@@ -53,4 +53,7 @@
     {%endfor%}
   </tbody>
 </table>
-{%endblock%}
+
+{% else %}
+<h2 class="mark text-center mb-8">Your Watchlist is Empty</h2>
+{%endif%} {%endblock%}

@@ -1,6 +1,6 @@
 {% extends "auctions/layout.html" %}{% block body %}
 <h2>Active Listings</h2>
-
+{% if auction_listings.0 is not None%}
 <table class="table">
   <thead>
     <tr>
@@ -17,7 +17,7 @@
         {%if listing.image%}<a href="{% url 'listing' listing.id %}">
           <img
             src="{{ listing.image }}"
-            class="img-thumbnail bg-dark"
+            class="img-thumbnail"
             alt="Does not exist"
         /></a>
         {%else%}
@@ -49,4 +49,7 @@
     {%endfor%}
   </tbody>
 </table>
-{% endblock %}
+{% else %}
+<h2 class="mark text-center mb-8">No Active Auctions Right Now</h2>
+<h4 class="text-center">Come Back Later</h4>
+{%endif%} {% endblock %}

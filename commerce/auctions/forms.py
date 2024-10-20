@@ -6,12 +6,12 @@ from django.core.validators import MinValueValidator
 class AuctionListingForm(forms.ModelForm):
     title = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Title'}), label="")
     description = forms.CharField(widget=forms.Textarea(attrs={'class': 'form-control', 'placeholder': 'Description'}), label="")
-    starting_bid = forms.DecimalField(widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Starting Bid"}), max_digits=12, decimal_places=2, label= "")
-    image = forms.URLField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'URL for an Image'}), label="")
+    starting_bid = forms.DecimalField(widget=forms.NumberInput(attrs={"class": "form-control", "placeholder": "Starting Bid"}), max_digits=12, decimal_places=2, label= "")
+    image = forms.URLField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'URL for an Image'}), label="", required=False)
     category = forms.ChoiceField(widget=forms.Select(attrs={'class': 'form-select'}), choices=AuctionListing.Categories, label="")
     class Meta:
         model = AuctionListing
-        exclude = ['user', 'active']
+        exclude = ['user', 'active', 'auction_datetime']
         
 
 

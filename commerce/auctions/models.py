@@ -34,8 +34,8 @@ class AuctionListing(models.Model):
               ("Party Supplies", "Party Supplies")]
 
     category = models.CharField(max_length=64, choices=Categories, default="No Category")
-
     active = models.BooleanField(default=True)
+    auction_datetime = models.DateTimeField(blank=True)
 
     
 
@@ -49,6 +49,7 @@ class Comments(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     auction = models.ForeignKey(AuctionListing, on_delete=models.CASCADE)
     comment = models.TextField(blank=True)
+    comment_datetime = models.DateTimeField(blank=True)
 
 
 class WatchList(models.Model):
